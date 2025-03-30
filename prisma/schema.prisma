@@ -1,0 +1,207 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Aluno {
+  id           Int                @id @default(autoincrement())
+  nome         String             @db.VarChar(60)
+  dataNasc     DateTime           
+  isAtivo      Boolean            @default(true)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  turma        Turma
+  diario       Diario[]
+  responsaveis ResponsavelAluno[]
+
+  @@map("alunos")
+}
+
+enum Turma {
+  BERCARIO
+  MATERNAL1
+  MATERNAL2
+  PRE1
+  PRE2
+  TURNOINVERSO
+}
+
+enum TIPO_USUARIO {
+  ADMIN
+  PROFESSOR
+  RESPONSAVEL
+}
+
+model Responsavel {
+  id                Int                @id @default(autoincrement())
+  nome              String             @db.VarChar(60)
+  senha             String             @db.VarChar(60)
+  email             String             @db.VarChar(40)
+  telefone          String             @db.VarChar(20)
+  tipoUsuario       TIPO_USUARIO       @default(RESPONSAVEL)
+  isAtivo           Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  resetToken        String?
+  resetTokenExpires DateTime?
+  alunos            ResponsavelAluno[]
+
+  @@map("responsaveis")
+}
+
+model ResponsavelAluno {
+  id            Int         @id @default(autoincrement())
+  alunoId       Int
+  responsavelId Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  aluno         Aluno       @relation(fields: [alunoId], references: [id])
+  responsavel   Responsavel @relation(fields: [responsavelId], references: [id])
+
+  @@unique([alunoId, responsavelId])
+  @@map("responsaveis_alunos")
+}
+
+model Professor {
+  id                Int              @id @default(autoincrement())
+  nome              String           @db.VarChar(60)
+  email             String           @db.VarChar(40)
+  senha             String           @db.VarChar(60)
+  tipoUsuario       TIPO_USUARIO     @default(PROFESSOR)
+  isAtivo           Boolean          @default(true)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  resetToken        String?
+  resetTokenExpires DateTime?
+  turmas            ProfessorTurma[]
+
+  @@map("professores")
+}
+
+model ProfessorTurma {
+  id          Int       @id @default(autoincrement())
+  professorId Int
+  turma       Turma
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  professor   Professor @relation(fields: [professorId], references: [id])
+
+  @@unique([professorId, turma])
+  @@map("professores_turmas")
+}
+
+model Admin {
+  id                Int          @id @default(autoincrement())
+  nome              String       @db.VarChar(60)
+  email             String       @db.VarChar(40)
+  senha             String       @db.VarChar(60)
+  tipoUsuario       TIPO_USUARIO @default(ADMIN)
+  isAtivo           Boolean      @default(true)
+  createdAt         DateTime     @default(now())
+  resetToken        String?
+  resetTokenExpires DateTime?
+  updatedAt         DateTime     @updatedAt
+  logs              Log[]
+
+  @@map("admins")
+}
+
+model Log {
+  id          Int      @id @default(autoincrement())
+  descricao   String   @db.VarChar(60)
+  complemento String   @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  adminId     Int
+  admin       Admin    @relation(fields: [adminId], references: [id])
+
+  @@map("logs")
+}
+
+model Diario {
+  id          Int               @id @default(autoincrement())
+  data        DateTime          @db.Date
+  observacoes String            @db.VarChar(255)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  alunoId     Int
+  aluno       Aluno             @relation(fields: [alunoId], references: [id])
+  disposicao  DisposicaoAluno[]
+  refeicoes   Refeicao[]
+  evacuacao   Evacucao[]
+  sono        Sono[]
+
+  @@unique([alunoId, data])
+  @@map("diarios")
+}
+
+model DisposicaoAluno {
+  id        Int        @id @default(autoincrement())
+  status    DISPOSICAO
+  createdAt DateTime   @default(now())
+  diarioId  Int
+  diario    Diario     @relation(fields: [diarioId], references: [id])
+
+  @@map("disposicao")
+}
+
+enum DISPOSICAO {
+  AGITADO
+  NORMAL
+  CALMO
+  SONOLENTO
+  CANSADO
+}
+
+model Refeicao {
+  id          Int      @id @default(autoincrement())
+  lancheManha REFEICAO @default(NAO_SE_APLICA)
+  almoco      REFEICAO @default(NAO_SE_APLICA)
+  lancheTarde REFEICAO @default(NAO_SE_APLICA)
+  leite       REFEICAO @default(NAO_SE_APLICA)
+  createdAt   DateTime @default(now())
+  diarioId    Int
+  diario      Diario   @relation(fields: [diarioId], references: [id])
+
+  @@map("refeicoes")
+}
+
+enum REFEICAO {
+  OTIMO
+  BOM
+  REGULAR
+  NAO_ACEITOU
+  NAO_SE_APLICA
+}
+
+model Evacucao {
+  id        Int       @id @default(autoincrement())
+  status    EVACUACAO
+  createdAt DateTime  @default(now())
+  diarioId  Int
+  diario    Diario    @relation(fields: [diarioId], references: [id])
+
+  @@map("evacuacao")
+}
+
+enum EVACUACAO {
+  NORMAL
+  LIQUIDA
+  DURA
+  NAO_EVACUOU
+}
+
+model Sono {
+  id        Int      @id @default(autoincrement())
+  dormiu    DateTime
+  acordou   DateTime
+  createdAt DateTime @default(now())
+  diarioId  Int
+  diario    Diario   @relation(fields: [diarioId], references: [id])
+
+  @@map("sono")
+}
