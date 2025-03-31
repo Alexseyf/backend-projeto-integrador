@@ -141,4 +141,5 @@ router.post("/responsaveis", verificaToken, verificaAdmin, async (req, res) => {
   }
 })
 
+
 export default router
