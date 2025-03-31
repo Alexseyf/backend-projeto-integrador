@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "npx ts-node-dev --respawn index.ts"
