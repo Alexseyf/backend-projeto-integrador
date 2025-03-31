@@ -5,11 +5,13 @@ import AdminsResponsaveis from './routes/admins'
 import routesLogin from './routes/login'
 import routesRecuperaSenha from './routes/recuperaSenha'
 import routesValidaSenha from './routes/validaSenha'
+import cors from 'cors'
 
 const app = express()
 const port = 3000
 
 app.use(express.json())
+app.use(cors())
 
 app.use("/admins", routesAdmins)
 app.use("/admins/alunos", routesAdminsAlunos)
