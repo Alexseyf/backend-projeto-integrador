@@ -65,7 +65,7 @@ router.post("/", verificaToken, verificaAdmin, async (req, res) => {
   }
 })
 
-router.get("/alunos", verificaToken, verificaAdmin, async (req, res) => {
+router.get("/alunos", async (req, res) => {
   try {
     const alunos = await prisma.aluno.findMany({
       orderBy: { id: "desc" },
