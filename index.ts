@@ -15,18 +15,16 @@ app.use((req, res, next) => {
 })
 
 app.use(cors({
-  origin: '*', // Ou defina um domínio específico (ex: 'https://seusite.com')
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'], // Garanta que está listado
-  exposedHeaders: ['Authorization'], // Adicione para expor o header
+  allowedHeaders: ['Content-Type', 'Authorization'], 
+  exposedHeaders: ['Authorization'], 
   credentials: true
 }))
 
 app.use(express.json())
 
 app.use((req, res, next) => {
-  console.log('🔍 Headers recebidos:', req.headers);
-  console.log('🔑 Authorization header:', req.headers.authorization);
   next()
 })
 
