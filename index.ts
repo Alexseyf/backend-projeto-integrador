@@ -11,26 +11,22 @@ const app = express()
 const port = 3000
 
 app.use((req, res, next) => {
-  console.log('=== Request Debug ===')
-  console.log('URL:', req.url)
-  console.log('Method:', req.method)
-  console.log('Headers:', JSON.stringify(req.headers, null, 2))
-  console.log('Body:', JSON.stringify(req.body, null, 2))
-  console.log('====================')
   next()
 })
 
 app.use(cors({
-  origin: '*',
+  origin: '*', // Ou defina um domínio específico (ex: 'https://seusite.com')
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin'],
+  allowedHeaders: ['Content-Type', 'Authorization'], // Garanta que está listado
+  exposedHeaders: ['Authorization'], // Adicione para expor o header
   credentials: true
 }))
 
 app.use(express.json())
 
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`)
+  console.log('🔍 Headers recebidos:', req.headers);
+  console.log('🔑 Authorization header:', req.headers.authorization);
   next()
 })
 
