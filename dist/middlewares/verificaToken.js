@@ -8,8 +8,10 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 function verificaToken(req, res, next) {
     const { authorization } = req.headers;
     if (!authorization) {
-        res.status(401).json({ error: "Token não informado" });
-        return;
+        return res.status(401).json({
+            error: "Token não informado",
+            headers: req.headers
+        });
     }
     const token = authorization.split(" ")[1];
     try {
@@ -21,6 +23,9 @@ function verificaToken(req, res, next) {
         next();
     }
     catch (error) {
-        res.status(401).json({ error: "Token inválido" });
+        return res.status(401).json({
+            error: "Token inválido",
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 }
