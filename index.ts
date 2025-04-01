@@ -10,43 +10,30 @@ import cors from 'cors'
 const app = express()
 const port = 3000
 
-// Middleware para debug detalhado
 app.use((req, res, next) => {
-  console.log('=== Nova Requisição ===')
+  console.log('=== Request Debug ===')
   console.log('URL:', req.url)
-  console.log('Método:', req.method)
+  console.log('Method:', req.method)
   console.log('Headers:', JSON.stringify(req.headers, null, 2))
   console.log('Body:', JSON.stringify(req.body, null, 2))
-  console.log('=====================')
+  console.log('====================')
   next()
 })
+
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin'],
+  credentials: true
+}))
 
 app.use(express.json())
 
-// Configuração mais permissiva do CORS
-app.use(cors({
-  origin: true,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-  exposedHeaders: ['Content-Type', 'Authorization']
-}))
-
-// Middleware específico para o Vercel
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept')
-  res.header('Access-Control-Allow-Credentials', 'true')
+  console.log(`${req.method} ${req.url}`)
   next()
 })
 
-// Middleware para verificar se o token está chegando
-app.use((req, res, next) => {
-  const authHeader = req.headers.authorization
-  console.log('Authorization Header:', authHeader)
-  next()
-})
 
 app.use("/admins", routesAdmins)
 app.use("/admins/alunos", routesAdminsAlunos)
@@ -59,6 +46,22 @@ app.get('/', (req, res) => {
   res.send('API - Escola Educação Infantil')
 })
 
-app.listen(port, () => {
-  console.log(`Servidor rodando na porta: ${port}`)
+
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('Error:', err)
+  console.error('Stack:', err.stack)
+  res.status(500).json({ 
+    error: 'Algo deu errado!',
+    details: err.message,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  })
 })
+
+
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(3000, () => {
+    console.log('Servidor rodando na porta 3000')
+  })
+}
+
+export default app
