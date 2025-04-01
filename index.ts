@@ -10,9 +10,14 @@ import cors from 'cors'
 const app = express()
 const port = 3000
 
-// Middleware para debug de headers
+// Middleware para debug detalhado
 app.use((req, res, next) => {
-  console.log('Request Headers:', req.headers)
+  console.log('=== Nova Requisição ===')
+  console.log('URL:', req.url)
+  console.log('Método:', req.method)
+  console.log('Headers:', JSON.stringify(req.headers, null, 2))
+  console.log('Body:', JSON.stringify(req.body, null, 2))
+  console.log('=====================')
   next()
 })
 
@@ -20,7 +25,7 @@ app.use(express.json())
 
 // Configuração mais permissiva do CORS
 app.use(cors({
-  origin: true, // Permite todas as origens
+  origin: true,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
@@ -32,6 +37,14 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept')
+  res.header('Access-Control-Allow-Credentials', 'true')
+  next()
+})
+
+// Middleware para verificar se o token está chegando
+app.use((req, res, next) => {
+  const authHeader = req.headers.authorization
+  console.log('Authorization Header:', authHeader)
   next()
 })
 
