@@ -14,7 +14,7 @@ export function verificaToken(req: Request | any, res: Response, next: NextFunct
   if (!authorization) {
     return res.status(401).json({ 
       error: "Token não informado",
-      headers: req.headers
+      // headers: req.headers
     })
   }
 

@@ -10,7 +10,7 @@ function verificaToken(req, res, next) {
     if (!authorization) {
         return res.status(401).json({
             error: "Token não informado",
-            headers: req.headers
+            // headers: req.headers
         });
     }
     const token = authorization.split(" ")[1];
