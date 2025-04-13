@@ -32,17 +32,18 @@ router.post("/", async (req, res) => {
 
   if (admin) {
     const isSamePassword = await bcrypt.compare(novaSenha, admin.senha)
-    if (isSamePassword) {
-      return res.status(400).json({
-        erro: "A nova senha deve ser diferente da senha atual",
-        codigo: "SENHA_IGUAL",
-      })
-    }
 
     if (!admin.resetToken) {
       return res.status(400).json({
         erro: "Código inválido ou expirado",
         codigo: "CODIGO_INVALIDO",
+      })
+    }
+
+    if (isSamePassword) {
+      return res.status(400).json({
+        erro: "A nova senha deve ser diferente da senha atual",
+        codigo: "SENHA_IGUAL",
       })
     }
 
@@ -83,17 +84,18 @@ router.post("/", async (req, res) => {
 
   if (professor) {
     const isSamePassword = await bcrypt.compare(novaSenha, professor.senha)
-    if (isSamePassword) {
-      return res.status(400).json({
-        erro: "A nova senha deve ser diferente da senha atual",
-        codigo: "SENHA_IGUAL",
-      })
-    }
 
     if (!professor.resetToken) {
       return res.status(400).json({
         erro: "Código inválido ou expirado",
         codigo: "CODIGO_INVALIDO",
+      })
+    }
+
+    if (isSamePassword) {
+      return res.status(400).json({
+        erro: "A nova senha deve ser diferente da senha atual",
+        codigo: "SENHA_IGUAL",
       })
     }
 
@@ -134,17 +136,18 @@ router.post("/", async (req, res) => {
 
   if (responsavel) {
     const isSamePassword = await bcrypt.compare(novaSenha, responsavel.senha)
-    if (isSamePassword) {
-      return res.status(400).json({
-        erro: "A nova senha deve ser diferente da senha atual",
-        codigo: "SENHA_IGUAL",
-      })
-    }
 
     if (!responsavel.resetToken) {
       return res.status(400).json({
         erro: "Código inválido ou expirado",
         codigo: "CODIGO_INVALIDO",
+      })
+    }
+
+    if (isSamePassword) {
+      return res.status(400).json({
+        erro: "A nova senha deve ser diferente da senha atual",
+        codigo: "SENHA_IGUAL",
       })
     }
 
